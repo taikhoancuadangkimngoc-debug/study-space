@@ -342,24 +342,25 @@
 
         .heatmap-day:hover { transform: scale(1.5); z-index: 10; box-shadow: 0 0 15px #ffffff; border-color: #fff; }
 
-        .tooltip {
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(15, 23, 42, 0.95);
-            color: #fff;
-            padding: 6px 10px;
-            border-radius: 6px;
-            font-size: 0.75rem;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.15s ease;
-            z-index: 100;
-            border: 1px solid rgba(255,255,255,0.3);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+       .tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px); /* Đẩy hẳn lên phía trên ô */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #0f172a; /* Màu nền tối rõ ràng */
+    color: #ffffff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none; /* Tránh cản trở chuột */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.15s ease, visibility 0.15s ease;
+    z-index: 1000;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.8);
         }
 
         .heatmap-day:hover .tooltip { opacity: 1; visibility: visible; }
