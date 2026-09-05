@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Space 2026-2027</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;800;900&family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-card: rgba(15, 23, 42, 0.75);
+            --bg-card-border: rgba(255, 255, 255, 0.3);
+            --text-main: #ffffff;
+            --text-muted: #cbd5e1;
+            
+            /* Các cấp độ sáng Neon rực rỡ cho Heatmap */
+            --level-0: rgba(255, 255, 255, 0.18);
+            --level-1: #059669;
+            --level-2: #10b981;
+            --level-3: #34d399;
+            --level-4: #6ee7b7;
+            
+            --glow-1: 0 0 8px #059669;
+            --glow-2: 0 0 12px #10b981;
+            --glow-3: 0 0 18px #34d399, 0 0 6px #34d399;
+            --glow-4: 0 0 25px #6ee7b7, 0 0 12px #6ee7b7, 0 0 5px #ffffff;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* KHẮC PHỤC NỀN: HIỂN THỊ RÕ NÉT 100%, KHÔNG MỜ */
+        .video-background {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -2;
+            pointer-events: none;
+            overflow: hidden;
+            filter: brightness(0.95) contrast(1.05);
+        }
+
+        .video-background iframe {
+            width: 100vw; height: 56.25vw;
+            min-height: 100vh; min-width: 177.77vh;
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: -1;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .app-container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-height: 100vh;
+        }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1.5px solid var(--bg-card-border);
+            border-radius: 20px;
+            padding: 24px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .brand h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            letter-spacing: 2px;
+            background: linear-gradient(135deg, #ffffff 0%, #a5b4fc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(165, 180, 252, 0.5);
+        }
+
+        .brand p { font-size: 0.85rem; color: var(--text-muted); font-weight: 500; }
+
+        .yt-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 14px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.25);
+        }
+
+        .yt-controls input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #fff;
+            font-size: 0.85rem;
+            width: 220px;
+            font-family: inherit;
+        }
+
+        .yt-controls button {
+            background: #6366f1;
+            color: #fff;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+        }
+
+        @media (max-width: 868px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+
+        .countdown-card, .timer-card {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+        }
+
+        .card-label {
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: #a5b4fc;
+            font-weight: 700;
+            margin-bottom: 12px;
+        }
+
+        /* Cải tiến hiển thị 2 đếm ngược */
+        .countdowns-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+        }
+
+        .countdown-block {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .countdown-timer { display: flex; gap: 14px; margin: 6px 0; }
+
+        .time-box { display: flex; flex-direction: column; align-items: center; }
+
+        .time-box .num {
+            font-family: 'Cinzel', serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            line-height: 1;
+            color: #ffffff;
+            text-shadow: 0 0 15px rgba(255, 255, 255, 0.8), 0 0 30px rgba(99, 102, 241, 0.6);
+        }
+
+        .time-box .unit {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .target-date {
+            font-size: 0.75rem;
+            color: #a5b4fc;
+            background: rgba(99, 102, 241, 0.25);
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(165, 180, 252, 0.4);
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .pulse-indicator {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.2);
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-bottom: 12px;
+            border: 1px solid rgba(52, 211, 153, 0.4);
+            font-weight: 600;
+        }
+
+        .pulse-dot {
+            width: 8px; height: 8px;
+            background-color: #34d399;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #34d399;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(52, 211, 153, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(52, 211, 153, 0); }
+        }
+
+        .live-timer {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(52, 211, 153, 0.6);
+            margin: 8px 0;
+            letter-spacing: 2px;
+        }
+
+        .today-total { font-size: 0.95rem; color: var(--text-muted); }
+        .today-total span { color: #34d399; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+
+        /* BẢN ĐỒ NHIỆT (HEATMAP): BỔ SUNG Ô NHẬP MỤC TIÊU */
+        .heatmap-section { display: flex; flex-direction: column; gap: 16px; }
+
+        .heatmap-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .heatmap-title h2 { font-size: 1.3rem; font-weight: 800; color: #fff; }
+        .heatmap-title p { font-size: 0.85rem; color: var(--text-muted); }
+
+        .goal-controls {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 6px 14px;
+            border-radius: 10px;
+            border: 1px solid rgba(165, 180, 252, 0.3);
+            font-size: 0.85rem;
+            color: #a5b4fc;
+            font-weight: 600;
+        }
+
+        .goal-controls input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 6px;
+            color: #fff;
+            padding: 4px 8px;
+            width: 60px;
+            text-align: center;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            outline: none;
+        }
+
+        .heatmap-legend {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #fff;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+
+        .legend-box { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(255, 255, 255, 0.3); }
+
+        .heatmap-wrapper {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            overflow-x: auto;
+        }
+
+        .heatmap-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: flex-start;
+        }
+
+        .heatmap-day {
+            width: 18px;
+            height: 18px;
+            border-radius: 3px;
+            background-color: var(--level-0);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            transition: all 0.2s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        /* Từng cấp độ phát sáng rõ nét theo tỷ lệ mục tiêu */
+        .heatmap-day[data-level="0"] { background-color: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.25); box-shadow: none; }
+        .heatmap-day[data-level="1"] { background-color: var(--level-1); box-shadow: var(--glow-1); border-color: #34d399; }
+        .heatmap-day[data-level="2"] { background-color: var(--level-2); box-shadow: var(--glow-2); border-color: #6ee7b7; }
+        .heatmap-day[data-level="3"] { background-color: var(--level-3); box-shadow: var(--glow-3); border-color: #a7f3d0; }
+        .heatmap-day[data-level="4"] { background-color: var(--level-4); box-shadow: var(--glow-4); border-color: #ffffff; }
+
+        .heatmap-day:hover { transform: scale(1.5); z-index: 10; box-shadow: 0 0 15px #ffffff; border-color: #fff; }
+
+        .tooltip {
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(15, 23, 42, 0.95);
+            color: #fff;
+            padding: 6px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            white-space: nowrap;
+            pointer-events: none;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.15s ease;
+            z-index: 100;
+            border: 1px solid rgba(255,255,255,0.3);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        .heatmap-day:hover .tooltip { opacity: 1; visibility: visible; }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .stat-item {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 14px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-item .val {
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-family: 'Cinzel', serif;
+            color: #6ee7b7;
+            text-shadow: 0 0 10px rgba(110, 231, 183, 0.4);
+        }
+
+        .stat-item .lbl { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; }
+
+        footer { text-align: center; font-size: 0.8rem; color: var(--text-muted); margin-top: auto; padding: 12px 0; }
+    </style>
+</head>
+<body>
+
+    <div class="video-background">
+        <iframe id="ytPlayer" 
+            src="https://www.youtube.com/embed/jfKfPfyJRdk?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=jfKfPfyJRdk&playsinline=1" 
+            frameborder="0" 
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+            allowfullscreen>
+        </iframe>
+    </div>
+    <div class="bg-overlay"></div>
+
+    <div class="app-container">
+        
+        <header class="glass-card">
+            <div class="brand">
+                <h1>STUDY SPACE 2026-2027</h1>
+                <p>Hành trình chinh phục Kỳ thi THPT Quốc Gia & QĐA</p>
+            </div>
+            
+            <div class="yt-controls">
+                <input type="text" id="ytUrlInput" placeholder="Dán link YouTube lofi..." />
+                <button onclick="changeBgVideo()">Đổi nền</button>
+            </div>
+        </header>
+
+        <div class="dashboard-grid">
+            <!-- Đếm ngược thời gian cho 2 kỳ thi -->
+            <div class="glass-card countdown-card">
+                <div class="card-label">Đếm ngược Kỳ thi 2027</div>
+                <div class="countdowns-wrapper">
+                    <!-- 1. THPTQG -->
+                    <div class="countdown-block">
+                        <div class="countdown-timer">
+                            <div class="time-box"><span class="num" id="cdDays1">000</span><span class="unit">Ngày</span></div>
+                            <div class="time-box"><span class="num" id="cdHours1">00</span><span class="unit">Giờ</span></div>
+                            <div class="time-box"><span class="num" id="cdMins1">00</span><span class="unit">Phút</span></div>
+                            <div class="time-box"><span class="num" id="cdSecs1">00</span><span class="unit">Giây</span></div>
+                        </div>
+                        <div class="target-date">THPTQG Dự kiến: 12/06/2027</div>
+                    </div>
+                    <!-- 2. QĐA -->
+                    <div class="countdown-block">
+                        <div class="countdown-timer">
+                            <div class="time-box"><span class="num" id="cdDays2">000</span><span class="unit">Ngày</span></div>
+                            <div class="time-box"><span class="num" id="cdHours2">00</span><span class="unit">Giờ</span></div>
+                            <div class="time-box"><span class="num" id="cdMins2">00</span><span class="unit">Phút</span></div>
+                            <div class="time-box"><span class="num" id="cdSecs2">00</span><span class="unit">Giây</span></div>
+                        </div>
+                        <div class="target-date">Thi QĐA Dự kiến: 19/06/2027</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card timer-card">
+                <div class="pulse-indicator">
+                    <div class="pulse-dot"></div>
+                    Tự động ghi nhận thời gian học
+                </div>
+                <div class="card-label">Phiên học hiện tại</div>
+                <div class="live-timer" id="sessionTimer">00:00:00</div>
+                <div class="today-total">Tổng thời gian hôm nay: <span id="todayTotalText">0.0 giờ</span></div>
+            </div>
+        </div>
+
+        <div class="glass-card heatmap-section">
+            <div class="heatmap-header">
+                <div class="heatmap-title">
+                    <h2>Biểu đồ nhiệt học tập (Glowing Heatmap Grid)</h2>
+                    <p>Lộ trình từ 01/09/2026 đến 30/06/2027 (~300 ngày học tập)</p>
+                </div>
+                
+                <!-- Nhập số giờ mục tiêu -->
+                <div class="goal-controls">
+                    <label for="goalHoursInput">Mục tiêu ngày:</label>
+                    <input type="number" id="goalHoursInput" value="4" min="0.5" step="0.5" onchange="onGoalChange()" oninput="onGoalChange()" />
+                    <span>giờ</span>
+                </div>
+
+                <div class="heatmap-legend">
+                    <span>0%</span>
+                    <div class="legend-box" style="background: var(--level-0)"></div>
+                    <div class="legend-box" style="background: var(--level-1)"></div>
+                    <div class="legend-box" style="background: var(--level-2)"></div>
+                    <div class="legend-box" style="background: var(--level-3)"></div>
+                    <div class="legend-box" style="background: var(--level-4)"></div>
+                    <span>≥100%</span>
+                </div>
+            </div>
+
+            <div class="heatmap-wrapper">
+                <div class="heatmap-grid" id="heatmapGrid"></div>
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="val" id="statTotalHours">0.0 hrs</span>
+                    <span class="lbl">Tổng số giờ đã học năm 2026-2027</span>
+                </div>
+                <div class="stat-item">
+                    <span class="val" id="statActiveDays">0 ngày</span>
+                    <span class="lbl">Số ngày đã tích cực học tập</span>
+                </div>
+                <div class="stat-item">
+                    <span class="val" id="statCurrentStreak">0 ngày</span>
+                    <span class="lbl">Chuỗi ngày học liên tục (Streak)</span>
+                </div>
+            </div>
+        </div>
+
+        <footer>Ghi nhận tự động trên trình duyệt • Sẵn sàng cho GitHub Pages</footer>
+    </div>
+
+    <script>
+        function extractVideoID(url) {
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length === 11) ? match[7] : null;
+        }
+
+        function changeBgVideo() {
+            const input = document.getElementById('ytUrlInput').value.trim();
+            if(!input) return;
+            const videoId = extractVideoID(input);
+            if(videoId) {
+                document.getElementById('ytPlayer').src = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${videoId}&playsinline=1`;
+                localStorage.setItem('study_yt_video', videoId);
+            }
+        }
+
+        const savedVideo = localStorage.getItem('study_yt_video');
+        if(savedVideo) {
+            document.getElementById('ytPlayer').src = `https://www.youtube.com/embed/${savedVideo}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${savedVideo}&playsinline=1`;
+        }
+
+        // Cấu hình 2 Ngày Thi Dự Kiến 2027
+        const targetDate1 = new Date('2027-06-12T00:00:00+07:00').getTime(); // THPTQG
+        const targetDate2 = new Date('2027-06-19T00:00:00+07:00').getTime(); // Thi QĐA
+
+        function updateCountdown() {
+            const now = new Date().getTime();
+            
+            // 1. THPTQG
+            const distance1 = targetDate1 - now;
+            if (distance1 >= 0) {
+                document.getElementById('cdDays1').innerText = String(Math.floor(distance1 / (1000 * 60 * 60 * 24))).padStart(3, '0');
+                document.getElementById('cdHours1').innerText = String(Math.floor((distance1 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('cdMins1').innerText = String(Math.floor((distance1 % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('cdSecs1').innerText = String(Math.floor((distance1 % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+
+            // 2. QĐA
+            const distance2 = targetDate2 - now;
+            if (distance2 >= 0) {
+                document.getElementById('cdDays2').innerText = String(Math.floor(distance2 / (1000 * 60 * 60 * 24))).padStart(3, '0');
+                document.getElementById('cdHours2').innerText = String(Math.floor((distance2 % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, '0');
+                document.getElementById('cdMins2').innerText = String(Math.floor((distance2 % (1000 * 60 * 60)) / (1000 * 60))).padStart(2, '0');
+                document.getElementById('cdSecs2').innerText = String(Math.floor((distance2 % (1000 * 60)) / 1000)).padStart(2, '0');
+            }
+        }
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+
+        const sessionStartTime = Date.now();
+        function getTodayKey() {
+            const today = new Date();
+            return `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+        }
+
+        function getStudyData() {
+            const data = localStorage.getItem('study_logs_2026_2027');
+            return data ? JSON.parse(data) : {};
+        }
+
+        function saveStudyData(data) {
+            localStorage.setItem('study_logs_2026_2027', JSON.stringify(data));
+        }
+
+        const todayKey = getTodayKey();
+        const baseTodaySeconds = getStudyData()[todayKey] || 0;
+
+        function formatHMS(totalSeconds) {
+            const h = Math.floor(totalSeconds / 3600);
+            const m = Math.floor((totalSeconds % 3600) / 60);
+            const s = Math.floor(totalSeconds % 60);
+            return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+        }
+
+        function updateLiveSession() {
+            const currentSessionSeconds = Math.floor((Date.now() - sessionStartTime) / 1000);
+            document.getElementById('sessionTimer').innerText = formatHMS(currentSessionSeconds);
+
+            const currentTodayTotal = baseTodaySeconds + currentSessionSeconds;
+            document.getElementById('todayTotalText').innerText = (currentTodayTotal / 3600).toFixed(2) + " giờ";
+
+            const latestData = getStudyData();
+            latestData[todayKey] = currentTodayTotal;
+            saveStudyData(latestData);
+            updateHeatmapGlowLevels(latestData);
+        }
+
+        setInterval(updateLiveSession, 1000);
+
+        const startDate = new Date('2026-09-01');
+        const endDate = new Date('2027-06-30');
+
+        // Quản lý Mục tiêu Số giờ
+        let targetDailyHours = parseFloat(localStorage.getItem('study_goal_hours')) || 4;
+        document.getElementById('goalHoursInput').value = targetDailyHours;
+
+        function onGoalChange() {
+            const val = parseFloat(document.getElementById('goalHoursInput').value);
+            if(val && val > 0) {
+                targetDailyHours = val;
+                localStorage.setItem('study_goal_hours', val);
+                generateHeatmapGrid();
+            }
+        }
+
+        // Đổ màu phát sáng linh hoạt dựa trên Mục Tiêu (Goal)
+        function getGlowLevel(hours) {
+            if (hours <= 0) return 0;
+            const ratio = hours / targetDailyHours;
+            if (ratio < 0.3) return 1;       // Dưới 30% mục tiêu
+            if (ratio < 0.6) return 2;       // Dưới 60% mục tiêu
+            if (ratio < 1.0) return 3;       // Dưới 100% mục tiêu
+            return 4;                        // Đạt hoặc vượt 100% mục tiêu (Sáng nhất)
+        }
+
+        function generateHeatmapGrid() {
+            const gridContainer = document.getElementById('heatmapGrid');
+            gridContainer.innerHTML = '';
+            let cur = new Date(startDate);
+            const currentData = getStudyData();
+
+            while (cur <= endDate) {
+                const yyyy = cur.getFullYear();
+                const mm = String(cur.getMonth() + 1).padStart(2, '0');
+                const dd = String(cur.getDate()).padStart(2, '0');
+                const dateStr = `${yyyy}-${mm}-${dd}`;
+
+                const dayEl = document.createElement('div');
+                dayEl.className = 'heatmap-day';
+                dayEl.dataset.date = dateStr;
+
+                const seconds = currentData[dateStr] || 0;
+                const hours = (seconds / 3600).toFixed(1);
+                dayEl.setAttribute('data-level', getGlowLevel(hours));
+
+                const tooltip = document.createElement('div');
+                tooltip.className = 'tooltip';
+                tooltip.innerText = `${dd}/${mm}/${yyyy}: ${hours}/${targetDailyHours}h`;
+                dayEl.appendChild(tooltip);
+
+                gridContainer.appendChild(dayEl);
+                cur.setDate(cur.getDate() + 1);
+            }
+            calculateStats(currentData);
+        }
+
+        function updateHeatmapGlowLevels(latestData) {
+            const todayKey = getTodayKey();
+            const todayEl = document.querySelector(`.heatmap-day[data-date="${todayKey}"]`);
+            if (todayEl) {
+                const seconds = latestData[todayKey] || 0;
+                const hours = (seconds / 3600).toFixed(1);
+                todayEl.setAttribute('data-level', getGlowLevel(hours));
+                const tooltip = todayEl.querySelector('.tooltip');
+                if (tooltip) {
+                    const parts = todayKey.split('-');
+                    tooltip.innerText = `${parts[2]}/${parts[1]}/${parts[0]}: ${hours}/${targetDailyHours}h`;
+                }
+            }
+            calculateStats(latestData);
+        }
+
+        function calculateStats(data) {
+            let totalSecs = 0, activeDays = 0, tempStreak = 0;
+            let cur = new Date(startDate);
+
+            while (cur <= endDate) {
+                const dateStr = `${cur.getFullYear()}-${String(cur.getMonth() + 1).padStart(2, '0')}-${String(cur.getDate()).padStart(2, '0')}`;
+                const secs = data[dateStr] || 0;
+                if (secs > 0) { totalSecs += secs; activeDays++; }
+                cur.setDate(cur.getDate() + 1);
+            }
+
+            let checkDate = new Date();
+            while (true) {
+                const dateStr = `${checkDate.getFullYear()}-${String(checkDate.getMonth() + 1).padStart(2, '0')}-${String(checkDate.getDate()).padStart(2, '0')}`;
+                if ((data[dateStr] || 0) > 0) {
+                    tempStreak++;
+                    checkDate.setDate(checkDate.getDate() - 1);
+                } else break;
+            }
+
+            document.getElementById('statTotalHours').innerText = (totalSecs / 3600).toFixed(1) + " hrs";
+            document.getElementById('statActiveDays').innerText = activeDays + " ngày";
+            document.getElementById('statCurrentStreak').innerText = tempStreak + " ngày";
+        }
+
+        generateHeatmapGrid();
+        updateLiveSession();
+    </script>
+</body>
+</html>
