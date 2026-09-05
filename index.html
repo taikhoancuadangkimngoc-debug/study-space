@@ -379,35 +379,58 @@
             </div>
         </header>
 
-        <div class="dashboard-grid">
+        <!-- Đếm ngược 1: THPTQG -->
             <div class="glass-card countdown-card">
-                <div class="card-label">Đếm ngược Kỳ thi THPTQG 2027</div>
+                <div class="card-label">Thi THPT Quốc Gia 2027</div>
                 <div class="countdown-timer">
-                    <div class="time-box"><span class="num" id="cdDays">000</span><span class="unit">Ngày</span></div>
-                    <div class="time-box"><span class="num" id="cdHours">00</span><span class="unit">Giờ</span></div>
-                    <div class="time-box"><span class="num" id="cdMins">00</span><span class="unit">Phút</span></div>
-                    <div class="time-box"><span class="num" id="cdSecs">00</span><span class="unit">Giây</span></div>
+                    <div class="time-box"><span class="num" id="cd1Days">000</span><span class="unit">Ngày</span></div>
+                    <div class="time-box"><span class="num" id="cd1Hours">00</span><span class="unit">Giờ</span></div>
+                    <div class="time-box"><span class="num" id="cd1Mins">00</span><span class="unit">Phút</span></div>
+                    <div class="time-box"><span class="num" id="cd1Secs">00</span><span class="unit">Giây</span></div>
                 </div>
-                <div class="target-date">Mục tiêu: 30/06/2027</div>
+                <div class="target-date">Dự kiến: 12/06/2027</div>
             </div>
 
+            <!-- Đếm ngược 2: Kỳ thi QĐA / ĐGNL / HSG -->
+            <div class="glass-card countdown-card">
+                <div class="card-label">Kỳ thi Dự kiến QĐA</div>
+                <div class="countdown-timer">
+                    <div class="time-box"><span class="num" id="cd2Days">000</span><span class="unit">Ngày</span></div>
+                    <div class="time-box"><span class="num" id="cd2Hours">00</span><span class="unit">Giờ</span></div>
+                    <div class="time-box"><span class="num" id="cd2Mins">00</span><span class="unit">Phút</span></div>
+                    <div class="time-box"><span class="num" id="cd2Secs">00</span><span class="unit">Giây</span></div>
+                </div>
+                <div class="target-date" style="color: #a7f3d0; border-color: rgba(167,243,208,0.3);">Dự kiến: 19/06/2027</div>
+            </div>
+                    <!-- Đồng hồ tính thời gian học -->
             <div class="glass-card timer-card">
                 <div class="pulse-indicator">
                     <div class="pulse-dot"></div>
-                    Tự động ghi nhận thời gian học
+                    Tự động ghi nhận
                 </div>
                 <div class="card-label">Phiên học hiện tại</div>
                 <div class="live-timer" id="sessionTimer">00:00:00</div>
-                <div class="today-total">Tổng thời gian hôm nay: <span id="todayTotalText">0.0 giờ</span></div>
+                <div class="today-total">Tổng hôm nay: <span id="todayTotalText">0.0 giờ</span></div>
             </div>
         </div>
 
         <div class="glass-card heatmap-section">
             <div class="heatmap-header">
-                <div class="heatmap-title">
-                    <h2>Biểu đồ nhiệt học tập (Glowing Heatmap Grid)</h2>
-                    <p>Lộ trình từ 01/09/2026 đến 30/06/2027 (~300 ngày học tập)</p>
+                <div>
+                    <div class="heatmap-title-box">
+                        <span class="heatmap-icon">📅</span>
+                    <h2>BẢN ĐỒ NHIỆT CẢ NĂM (YEAR IN PIXELS)</h2>
+                    </div>
+                    <p class="heatmap-subtitle">Mỗi ô là một ngày trong năm, hiển thị mức độ siêng năng học tập của bạn.</p>
                 </div>
+
+                <div class="heatmap-controls">
+                    <!-- Nhập số giờ mục tiêu -->
+                    <div class="target-input-box">
+                        <span>🎯 Mục tiêu:</span>
+                        <input type="number" id="targetHoursInput" min="1" max="24" value="4" onchange="updateTargetHours(this.value)">
+                        <span>giờ/ngày</span>
+                    </div>
                 <div class="heatmap-legend">
                     <span>Ít</span>
                     <div class="legend-box" style="background: var(--level-0)"></div>
